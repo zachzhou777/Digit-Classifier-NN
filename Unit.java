@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Unit {
 	private ArrayList<Double> outgoingWeights;
 	private double output;
+	private double delta;
 	
 	/**
 	 * Empty constructor for a unit.
@@ -38,9 +39,23 @@ public class Unit {
 	}
 	
 	/**
-	 * @param output The value to set the 'output' field to
+	 * @param output The new 'output' value
 	 */
 	public void setOutput(double output) {
 		this.output = output;
+	}
+	
+	/**
+	 * @return The 'delta' field
+	 */
+	public double getDelta() {
+		return delta;
+	}
+	
+	/**
+	 * @param delta The new 'delta' value
+	 */
+	public void setDelta(double delta) {
+		this.delta = delta;
 	}
 }
