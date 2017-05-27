@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Represents a unit in the neural network.
@@ -7,13 +8,17 @@ import java.util.ArrayList;
  */
 public class Unit {
 	private ArrayList<Double> outgoingWeights;
+	private double weightedSum;
 	private double output;
-	private double delta;
+	private double error;	// Also known as the delta value for a unit
+	private static Random randGen = new Random();
 	
 	/**
-	 * Empty constructor for a unit.
+	 * Constructor for a unit.
 	 */
-	public Unit() {}
+	public Unit() {
+		outgoingWeights = new ArrayList<Double>();
+	}
 	
 	/**
 	 * @param index The index in the layer immediately following that of the current unit
@@ -32,6 +37,27 @@ public class Unit {
 	}
 	
 	/**
+	 * Add a weight to the unit. Weight's value is a random number from 0.0 to 1.0.
+	 */
+	public void addRandWeight() {
+		outgoingWeights.add(randGen.nextDouble() * 0.01);
+	}
+	
+	/**
+	 * @return The 'weightedSum' field
+	 */
+	public double getWeightedSum() {
+		return weightedSum;
+	}
+	
+	/**
+	 * @param weightedSum The new 'weightedSum' value
+	 */
+	public void setWeightedSum(double weightedSum) {
+		this.weightedSum = weightedSum;
+	}
+	
+	/**
 	 * @return The 'output' field
 	 */
 	public double getOutput() {
@@ -46,16 +72,16 @@ public class Unit {
 	}
 	
 	/**
-	 * @return The 'delta' field
+	 * @return The 'error' field
 	 */
-	public double getDelta() {
-		return delta;
+	public double getError() {
+		return error;
 	}
 	
 	/**
-	 * @param delta The new 'delta' value
+	 * @param error The new 'error' value
 	 */
-	public void setDelta(double delta) {
-		this.delta = delta;
+	public void setError(double error) {
+		this.error = error;
 	}
 }

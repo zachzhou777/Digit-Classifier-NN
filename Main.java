@@ -44,12 +44,21 @@ public class Main {
 			// Construct and train the network
 			ArrayList<Integer> unitsPerLayer = new ArrayList<Integer>();
 			unitsPerLayer.add(256);
-			unitsPerLayer.add(100);
+			unitsPerLayer.add(5);
 			unitsPerLayer.add(10);
 			NeuralNet nn = new NeuralNet(unitsPerLayer);
-			nn.train(trainingInputs, trainingDesiredOutputs, 0.2, 125);
+			nn.train(trainingInputs, trainingDesiredOutputs, 0.2, 50);
 			
 			// Evaluate the effectiveness of the network
+			int correctCount = 0;
+			for (int i = 0; i < testingInputs.size(); i++) {
+				double classification = nn.classify(testingInputs.get(i));
+				double desiredOutput = testingDesiredOutputs.get(i);
+				if (classification == desiredOutput) correctCount++;
+				else System.out.println("Misclassification; expected " + desiredOutput + 
+						", instead got " + classification);
+			}
+			System.out.println("Correctly classified: " + (double) correctCount / testingInputs.size());
 		}
 		catch (FileNotFoundException e) {
 			System.err.println("Cannot find semeion.data");
