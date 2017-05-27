@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+/**
+ * Multilayer feedforward neural network implementation.
+ * 
+ * @author Zachary Zhou
+ */
 public class NeuralNet {
 	private ArrayList<ArrayList<Unit>> layers;
 	
@@ -33,10 +38,10 @@ public class NeuralNet {
 		for (int i = 0; i < unitsPerLayer.get(unitsPerLayer.size() - 1); i++) layer.add(new Unit());
 		layers.add(layer);
 		
-		// Create weights initialized to a random number from 0.0 to 1.0
+		// Create weights initialized to a random number from 0.00 to 0.01
 		for (int i = 0; i < layers.size() - 1; i++)
-			for (int j = 0; j < layers.get(i).size(); j++) {
-				for (int k = 0; k < layers.get(i + 1).size() - 1; k++)
+			for (int j = 0; j < unitsPerLayer.get(i) + 1; j++) {
+				for (int k = 0; k < unitsPerLayer.get(i + 1); k++)
 					layers.get(i).get(j).addRandWeight();
 				if (i == layers.size() - 2) layers.get(i).get(j).addRandWeight();
 			}
@@ -112,6 +117,12 @@ public class NeuralNet {
 				highestValue = outputLayer.get(i).getOutput();
 				index = i;
 			}
+		
+//		// For debugging
+//		System.out.println("Values at each output unit:");
+//		for (int i = 0; i < outputLayer.size(); i++) 
+//			System.out.println(i + ") " + outputLayer.get(i).getOutput());
+		
 		return index;	// Luckily enough, 'index' directly maps to the classification
 	}
 	
@@ -120,11 +131,11 @@ public class NeuralNet {
 	 * 
 	 * @param inputs A list of inputs for each training instance
 	 * @param desiredOutputs A list of desired output labels for each training instance
-	 * @param learningRate The learning rate for updating weights
 	 * @param numEpochs The number of epochs, i.e., passes through the training set
+	 * @param learningRate The learning rate for updating weights
 	 */
 	public void train(ArrayList<ArrayList<Double>> inputs, ArrayList<Integer> desiredOutputs, 
-			double learningRate, int numEpochs) {
+			int numEpochs, double learningRate) {
 		for (int i = 0; i < numEpochs; i++)
 			for (int j = 0; j < inputs.size(); j++) {
 				// Feed forward
@@ -135,9 +146,9 @@ public class NeuralNet {
 				
 				for (int k = 0; k < outputLayer.size(); k++) {
 					Unit u = outputLayer.get(k);
-					if (desiredOutputs.get(j) == k)
-						u.setError(activationDerivative(u.getWeightedSum()) * (u.getOutput() - 1));
-					else u.setError(activationDerivative(u.getWeightedSum()) * u.getOutput());
+					double label = 0.0;
+					if (desiredOutputs.get(j) == k) label = 1.0;
+					u.setError(activationDerivative(u.getWeightedSum()) * (label - u.getOutput()));
 				}
 				
 				// Back-propagate errors from output layer to the second layer, i.e., the layer right 
