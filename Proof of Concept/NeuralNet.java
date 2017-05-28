@@ -7,16 +7,21 @@ import java.util.ArrayList;
  */
 public class NeuralNet {
 	private ArrayList<ArrayList<Unit>> layers;
+	private final int activationFunction;
+	public static final int SIGMOID = 1;
+	public static final int ReLU = 2;
 	
 	/**
 	 * Constructs the neural network, i.e., the graph. Initializes all edge weights randomly. 
 	 * Also adds a bias node to each layer excluding the output layer.
 	 * 
 	 * @param unitsPerLayer Indicates how many layers there are and how many units should be in 
+	 * @param activationFunction The number corresponding to the desired activation function
 	 * each layer
 	 */
-	public NeuralNet(ArrayList<Integer> unitsPerLayer) {
+	public NeuralNet(ArrayList<Integer> unitsPerLayer, int activationFunction) {
 		layers = new ArrayList<ArrayList<Unit>>();
+		this.activationFunction = activationFunction;
 		
 		// For each layer excluding the output layer, create a layer of nodes of the specified 
 		// size plus one for the bias node
@@ -48,23 +53,33 @@ public class NeuralNet {
 	}
 	
 	/**
-	 * Use the sigmoid function as the activation function.
-	 * 
-	 * @param x The input to the sigmoid function S(x)
-	 * @return S(x)
+	 * @param x The input to the activation function
+	 * @param function The number corresponding to the desired activation function
+	 * @return The activation function on input x
 	 */
-	private double activationFunction(double x) {
-		return 1.0 / (1.0 + Math.exp(-x));
+	private double activationFunction(double x, int function) {
+		switch (function) {
+			case SIGMOID:	return 1.0 / (1.0 + Math.exp(-x));
+			case ReLU:		return Math.max(0, x);
+			default:		System.err.println("Invalid activation function argument");
+							System.exit(0);
+							return -1;
+		}
 	}
 	
 	/**
-	 * Calculates the derivative S'(x) of the sigmoid function S(x).
-	 * 
 	 * @param x The input to the activation function
-	 * @return S'(x)
+	 * @param function The number corresponding to the desired activation function
+	 * @return The derivative of the activation function on input x
 	 */
-	private double activationDerivative(double x) {
-		return activationFunction(x) * (1 - activationFunction(x));
+	private double activationDerivative(double x, int function) {
+		switch (function) {
+			case SIGMOID:	return activationFunction(x, SIGMOID) * (1 - activationFunction(x, SIGMOID));
+			case ReLU:		return (x > 0) ? 1 : 0;
+			default:		System.err.println("Invalid activation function argument");
+							System.exit(0);
+							return -1;
+		}
 	}
 	
 	/**
@@ -87,7 +102,7 @@ public class NeuralNet {
 					weightedSum += prevLayer.get(k).getOutput() * prevLayer.get(k).getWeight(j);
 				Unit u = layers.get(i).get(j);
 				u.setWeightedSum(weightedSum);
-				u.setOutput(activationFunction(weightedSum));
+				u.setOutput(activationFunction(weightedSum, activationFunction));
 			}
 			if (i == layers.size() - 1) {
 				double weightedSum = 0;
@@ -96,7 +111,7 @@ public class NeuralNet {
 						prevLayer.get(k).getWeight(layers.get(i).size() - 1);
 				Unit u = layers.get(i).get(layers.get(i).size() - 1);
 				u.setWeightedSum(weightedSum);
-				u.setOutput(activationFunction(weightedSum));
+				u.setOutput(activationFunction(weightedSum, activationFunction));
 			}
 		}
 	}
@@ -118,7 +133,7 @@ public class NeuralNet {
 				index = i;
 			}
 		
-//		// For debugging
+		// For debugging
 //		System.out.println("Values at each output unit:");
 //		for (int i = 0; i < outputLayer.size(); i++) 
 //			System.out.println(i + ") " + outputLayer.get(i).getOutput());
@@ -148,7 +163,8 @@ public class NeuralNet {
 					Unit u = outputLayer.get(k);
 					double label = 0.0;
 					if (desiredOutputs.get(j) == k) label = 1.0;
-					u.setError(activationDerivative(u.getWeightedSum()) * (label - u.getOutput()));
+					u.setError(activationDerivative(u.getWeightedSum(), activationFunction) * 
+							(label - u.getOutput()));
 				}
 				
 				// Back-propagate errors from output layer to the second layer, i.e., the layer right 
@@ -161,7 +177,7 @@ public class NeuralNet {
 					double error = 0;
 					for (int l = 0; l < outputLayer.size(); l++)
 						error += u.getWeight(l) * outputLayer.get(l).getError();
-					error *= activationDerivative(u.getWeightedSum());
+					error *= activationDerivative(u.getWeightedSum(), activationFunction);
 					u.setError(error);
 				}
 				
@@ -172,7 +188,7 @@ public class NeuralNet {
 						double error = 0;
 						for (int m = 0; m < layers.get(k + 1).size() - 1; m++)
 							error += u.getWeight(m) * layers.get(k + 1).get(m).getError();
-						error *= activationDerivative(u.getWeightedSum());
+						error *= activationDerivative(u.getWeightedSum(), activationFunction);
 						u.setError(error);
 					}
 				

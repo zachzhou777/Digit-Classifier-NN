@@ -11,23 +11,24 @@ import java.util.Scanner;
 public class Main {
 	private static final int NUM_INSTANCES = 1593;
 	private static final int NUM_INPUTS = 256;
-	private static final int NUM_HIDDEN[] = {12};
+	private static final int NUM_HIDDEN[] = {10};
 	private static final int NUM_OUTPUTS = 10;
-	private static final int NUM_EPOCHS = 100;
-	private static final double LEARNING_RATE = 0.2;
+	private static final int NUM_EPOCHS = 125;
+	private static final double LEARNING_RATE = 0.1;
 	
 	/**
 	 * Creates a neural network using instances from a training set. Uses the trained network to 
 	 * classify instances from a testing set.
 	 */
 	public static void main(String[] args) {
-		// Read the 'semeion.data' file into 'instances'
+		// Read the 'semeion.data' file
 		ArrayList<Instance> instances = new ArrayList<Instance>();
 		Scanner stdin;
 		try {
 			stdin = new Scanner(new File("semeion.data"));
 			while (stdin.hasNextLine()) {
 				String[] line = stdin.nextLine().split(" ");
+				
 				// Create input for an instance
 				ArrayList<Double> input = new ArrayList<Double>();
 				for (int i = 0; i < NUM_INPUTS; i++) input.add(Double.valueOf(line[i]));
@@ -82,7 +83,7 @@ public class Main {
 		unitsPerLayer.add(NUM_INPUTS);
 		for (int i : NUM_HIDDEN) unitsPerLayer.add(i);
 		unitsPerLayer.add(NUM_OUTPUTS);
-		NeuralNet nn = new NeuralNet(unitsPerLayer);
+		NeuralNet nn = new NeuralNet(unitsPerLayer, NeuralNet.SIGMOID);
 		nn.train(trainingInputs, trainingDesiredOutputs, NUM_EPOCHS, LEARNING_RATE);
 		
 		// Evaluate the effectiveness of the network
