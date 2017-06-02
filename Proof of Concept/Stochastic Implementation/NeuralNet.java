@@ -1,3 +1,5 @@
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 
 /**
@@ -10,6 +12,11 @@ public class NeuralNet {
 	private final int activationFunction;
 	public static final int SIGMOID = 1;
 	public static final int ReLU = 2;
+	
+	// Fields for rounding
+	private static final int SIGNIFICANT_FIGURES = 3;
+	private BigDecimal bigDecimal;
+	private MathContext mathContext = new MathContext(SIGNIFICANT_FIGURES);
 	
 	/**
 	 * Constructs the neural network, i.e., the graph. Initializes all edge weights randomly. 
@@ -98,17 +105,23 @@ public class NeuralNet {
 			ArrayList<Unit> prevLayer = layers.get(i - 1);
 			for (int j = 0; j < layers.get(i).size() - 1; j++) {	// Exclude the bias node
 				double weightedSum = 0;
-				for (int k = 0; k < prevLayer.size(); k++)
-					weightedSum += prevLayer.get(k).getOutput() * prevLayer.get(k).getWeight(j);
+				for (int k = 0; k < prevLayer.size(); k++) {
+					double product = prevLayer.get(k).getOutput() * prevLayer.get(k).getWeight(j);
+					bigDecimal = new BigDecimal(product);
+					weightedSum += bigDecimal.round(mathContext).doubleValue();
+				}
 				Unit u = layers.get(i).get(j);
 				u.setWeightedSum(weightedSum);
 				u.setOutput(activationFunction(weightedSum, activationFunction));
 			}
 			if (i == layers.size() - 1) {
 				double weightedSum = 0;
-				for (int k = 0; k < prevLayer.size(); k++)
-					weightedSum += prevLayer.get(k).getOutput() * 
-						prevLayer.get(k).getWeight(layers.get(i).size() - 1);
+				for (int k = 0; k < prevLayer.size(); k++) {
+					double product = prevLayer.get(k).getOutput() * 
+							prevLayer.get(k).getWeight(layers.get(i).size() - 1);
+					bigDecimal = new BigDecimal(product);
+					weightedSum += bigDecimal.round(mathContext).doubleValue();
+				}
 				Unit u = layers.get(i).get(layers.get(i).size() - 1);
 				u.setWeightedSum(weightedSum);
 				u.setOutput(activationFunction(weightedSum, activationFunction));
@@ -163,8 +176,10 @@ public class NeuralNet {
 					Unit u = outputLayer.get(k);
 					double label = 0.0;
 					if (desiredOutputs.get(j) == k) label = 1.0;
-					u.setError(activationDerivative(u.getWeightedSum(), activationFunction) * 
-							(label - u.getOutput()));
+					double error = activationDerivative(u.getWeightedSum(), activationFunction) * 
+							(label - u.getOutput());
+					bigDecimal = new BigDecimal(error);
+					u.setError(bigDecimal.round(mathContext).doubleValue());
 				}
 				
 				// Back-propagate errors from output layer to the second layer, i.e., the layer right 
@@ -175,10 +190,14 @@ public class NeuralNet {
 				for (int k = 0; k < layers.get(layers.size() - 2).size() - 1; k++) {
 					Unit u = layers.get(layers.size() - 2).get(k);
 					double error = 0;
-					for (int l = 0; l < outputLayer.size(); l++)
-						error += u.getWeight(l) * outputLayer.get(l).getError();
+					for (int l = 0; l < outputLayer.size(); l++) {
+						double product = u.getWeight(l) * outputLayer.get(l).getError();
+						bigDecimal = new BigDecimal(product);
+						error += bigDecimal.round(mathContext).doubleValue();
+					}
 					error *= activationDerivative(u.getWeightedSum(), activationFunction);
-					u.setError(error);
+					bigDecimal = new BigDecimal(error);
+					u.setError(bigDecimal.round(mathContext).doubleValue());
 				}
 				
 				// Step 2: Continue back-propagating errors all the way to the second
@@ -186,10 +205,14 @@ public class NeuralNet {
 					for (int l = 0; l < layers.get(k).size() - 1; l++) {
 						Unit u = layers.get(k).get(l);
 						double error = 0;
-						for (int m = 0; m < layers.get(k + 1).size() - 1; m++)
-							error += u.getWeight(m) * layers.get(k + 1).get(m).getError();
+						for (int m = 0; m < layers.get(k + 1).size() - 1; m++) {
+							double product = u.getWeight(m) * layers.get(k + 1).get(m).getError();
+							bigDecimal = new BigDecimal(product);
+							error += bigDecimal.round(mathContext).doubleValue();
+						}
 						error *= activationDerivative(u.getWeightedSum(), activationFunction);
-						u.setError(error);
+						bigDecimal= new BigDecimal(error);
+						u.setError(bigDecimal.round(mathContext).doubleValue());
 					}
 				
 				// Update weights using errors
@@ -197,8 +220,13 @@ public class NeuralNet {
 					for (int l = 0; l < layers.get(k).size(); l++) {
 						Unit u = layers.get(k).get(l);
 						for (int m = 0; m < layers.get(k + 1).size() - 1; m++) {
-							double weight = u.getWeight(m) + 
-									learningRate * u.getOutput() * layers.get(k + 1).get(m).getError();
+							double product = learningRate * u.getOutput();
+							bigDecimal = new BigDecimal(product);
+							product = bigDecimal.round(mathContext).doubleValue();
+							product *= layers.get(k + 1).get(m).getError();
+							bigDecimal = new BigDecimal(product);
+							product = bigDecimal.round(mathContext).doubleValue();
+							double weight = u.getWeight(m) + product;
 							u.setWeight(m, weight);
 						}
 					}

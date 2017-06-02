@@ -13,8 +13,8 @@ public class Main {
 	private static final int NUM_INPUTS = 256;
 	private static final int NUM_HIDDEN[] = {10};
 	private static final int NUM_OUTPUTS = 10;
-	private static final int NUM_EPOCHS = 100;
-	private static final double LEARNING_RATE = 0.02;
+	private static final int NUM_EPOCHS = 75;
+	private static final double LEARNING_RATE = 0.01;
 	
 	/**
 	 * Creates a neural network using instances from a training set. Uses the trained network to 
@@ -83,7 +83,7 @@ public class Main {
 		unitsPerLayer.add(NUM_INPUTS);
 		for (int i : NUM_HIDDEN) unitsPerLayer.add(i);
 		unitsPerLayer.add(NUM_OUTPUTS);
-		NeuralNet nn = new NeuralNet(unitsPerLayer, NeuralNet.SIGMOID);
+		NeuralNet nn = new NeuralNet(unitsPerLayer, NeuralNet.ReLU);
 		nn.train(trainingInputs, trainingDesiredOutputs, NUM_EPOCHS, LEARNING_RATE);
 		
 		// Evaluate the effectiveness of the network
