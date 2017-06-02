@@ -37,10 +37,10 @@ public class Unit {
 	}
 	
 	/**
-	 * Add a weight to the unit. Weight's value is a random number from 0.00 to 0.01.
+	 * Add a weight to the unit. Weight's value is a random number from -0.005 to +0.005.
 	 */
 	public void addRandWeight() {
-		outgoingWeights.add(randGen.nextDouble() * 0.01);
+		outgoingWeights.add((randGen.nextDouble() - 0.5) * 0.01);
 	}
 	
 	/**

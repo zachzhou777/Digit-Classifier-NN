@@ -43,7 +43,7 @@ public class NeuralNet {
 		for (int i = 0; i < unitsPerLayer.get(unitsPerLayer.size() - 1); i++) layer.add(new Unit());
 		layers.add(layer);
 		
-		// Create weights initialized to a random number from 0.00 to 0.01
+		// Create weights initialized to a random number from -0.005 to +0.005
 		for (int i = 0; i < layers.size() - 1; i++)
 			for (int j = 0; j < unitsPerLayer.get(i) + 1; j++) {
 				for (int k = 0; k < unitsPerLayer.get(i + 1); k++)

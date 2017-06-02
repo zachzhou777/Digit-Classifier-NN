@@ -13,8 +13,8 @@ public class Main {
 	private static final int NUM_INPUTS = 256;
 	private static final int NUM_HIDDEN[] = {10};
 	private static final int NUM_OUTPUTS = 10;
-	private static final int NUM_EPOCHS = 125;
-	private static final double LEARNING_RATE = 0.1;
+	private static final int NUM_EPOCHS = 100;
+	private static final double LEARNING_RATE = 0.02;
 	
 	/**
 	 * Creates a neural network using instances from a training set. Uses the trained network to 
