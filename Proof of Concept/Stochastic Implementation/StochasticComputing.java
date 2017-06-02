@@ -11,7 +11,7 @@ import java.util.Collections;
  * 
  * @author Zachary Zhou
  */
-public class StochasticNumbers {
+public class StochasticComputing {
 	private static final int BITSTREAM_LENGTH = 1024;
 	
 	/**
