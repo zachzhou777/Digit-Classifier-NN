@@ -13,5 +13,11 @@ to get \<0, 0, 0, 1>. Note that in this example, the product happens to be exact
 always hold. If the two bitstreams for 0.5 were exactly the same, the product would be 0.5 as well. Therefore, large bitstreams 
 are needed to achieve a certain level of precision.
 
-Proof of Concept - Java implementation of the neural network and stochastic computing methods
+Proof of Concept - Java implementations of the neural network, one using standard floating-point arithmetic, the other using 
+stochastic computing methods. For the stochastic implementation, the StochasticComputing.java file is a standalone file that 
+is used to determine how long a bitstream needs to be to attain a given level of precision in representing the real number. 
+NeuralNet.java performs arithmetic the same way as the standard implementation, but performs the extra step of rounding 
+floating-point numbers so that only one significant figure is present. Despite rounding errors, this neural net performs just 
+as well as the standard neural net.
+
 FPGA - Verilog/SystemVerilog code to be loaded on the FPGA
