@@ -11,7 +11,13 @@ of 1's represents the number. Multiplication can then be implemented using a sin
 gate. For example, the square of 0.5 is 0.25 and can be modeled as the bitwise AND of the vectors \<0, 1, 0, 1> and \<0, 0, 1, 1> 
 to get \<0, 0, 0, 1>. Note that in this example, the product happens to be exactly correct; most of the time this will not 
 happen. If the two bitstreams for 0.5 were exactly the same, the product would be 0.5 as well. Therefore, large bitstreams 
-are needed to (on average) achieve a certain level of precision.
+are needed to (on average) achieve a certain level of precision. In short, the advantage to using stochastic computing to perform 
+arithmetic is simplicity in hardware; you can implement multiplication with a single AND gate, whereas a multiplier requires 
+significantly resources. The major disadvantage would be time and precision; to multiply two numbers, you consume many clock 
+cycles trying to push two bitstreams through an AND gate, and the result may not even be that accurate. For most applications, 
+stochastic computing isn't necessary, but due to the massive amount of arithmetic needed in implementing a neural net, combined 
+with the fact much of the calculations can be performed in parallel and does not have to be terribly accurate to yield useful 
+results, stochastic computing is preferred over conventional arithmetic.
 
 Proof of Concept - Java implementations of the neural network, one using standard floating-point arithmetic, the other using 
 stochastic computing methods. For the stochastic implementation, the StochasticComputing.java file is a standalone file that 
