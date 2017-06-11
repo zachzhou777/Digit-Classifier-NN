@@ -1,8 +1,9 @@
 # Neural Network for Digit Classification
-Implementation of a neural network to classify handwritten digits. Goal is to implement the neural net on an embedded system 
-controlled by the Tiva LaunchPad MCU. The LaunchPad is connected to an LCD touchscreen, and I plan to have the system 
-classify digits traced on the screen. Training data is the Semeion handwritten digit data. Backpropagation and classifications 
-performed on the DE0-Nano FPGA board.
+This is an implementation of a neural network on an embedded system controlled by the Tiva LaunchPad MCU. Purpose of the neural 
+net is to classify handwritten digits. The LaunchPad is connected to an LCD touchscreen, and I plan to have the system classify 
+digits traced on the screen. Training data is the Semeion handwritten digit data, which can be found online. Training will be done 
+in Java so that edge weights can be calculated. These weights will then be loaded onto the DE0-Nano FPGA board, which will be used 
+to perform future classifications.
 
 Rather than performing conventional floating-point arithmetic, I'm using stochastic computing methods. The Survey of Stochastic 
 Computing paper by Armin Alaghi and John P. Hayes from the University of Michigan will do a better job than I can of explaining 
@@ -13,10 +14,10 @@ to get \<0, 0, 0, 1>. Note that in this example, the product happens to be exact
 happen. If the two bitstreams for 0.5 were exactly the same, the product would be 0.5 as well. Therefore, large bitstreams 
 are needed to (on average) achieve a certain level of precision. In short, the advantage to using stochastic computing to perform 
 arithmetic is simplicity in hardware; you can implement multiplication with a single AND gate, whereas a multiplier requires 
-significantly resources. The major disadvantage would be time and precision; to multiply two numbers, you consume many clock 
-cycles trying to push two bitstreams through an AND gate, and the result may not even be that accurate. For most applications, 
+significantly greater resources. The major disadvantage would be time and precision; to multiply two numbers, you consume many 
+clock cycles trying to push two bitstreams through an AND gate, and the result may not even be that accurate. For most applications, 
 stochastic computing isn't necessary, but due to the massive amount of arithmetic needed in implementing a neural net, combined 
-with the fact much of the calculations can be performed in parallel and does not have to be terribly accurate to yield useful 
+with the fact that many of the calculations can be performed in parallel and do not have to be terribly accurate to yield useful 
 results, stochastic computing is preferred over conventional arithmetic.
 
 Proof of Concept - Java implementations of the neural network, one using standard floating-point arithmetic, the other using 
