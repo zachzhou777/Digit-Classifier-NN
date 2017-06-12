@@ -61,7 +61,7 @@ public class Main {
 		int cutoff = NUM_INSTANCES / 5;
 		List<Instance> trainingInstances = instances.subList(cutoff, NUM_INSTANCES);
 		List<Instance> testingInstances = instances.subList(0, cutoff);
-
+		
 		// Create lists for training inputs and desired outputs
 		ArrayList<ArrayList<Double>> trainingInputs = new ArrayList<ArrayList<Double>>();
 		ArrayList<Integer> trainingDesiredOutputs = new ArrayList<Integer>();
@@ -69,7 +69,7 @@ public class Main {
 			trainingInputs.add(i.input);
 			trainingDesiredOutputs.add(i.desiredOutput);
 		}
-
+		
 		// Create lists for testing inputs and desired outputs
 		ArrayList<ArrayList<Double>> testingInputs = new ArrayList<ArrayList<Double>>();
 		ArrayList<Integer> testingDesiredOutputs = new ArrayList<Integer>();
@@ -77,7 +77,7 @@ public class Main {
 			testingInputs.add(i.input);
 			testingDesiredOutputs.add(i.desiredOutput);
 		}
-
+		
 		// Construct and train the network
 		ArrayList<Integer> unitsPerLayer = new ArrayList<Integer>();
 		unitsPerLayer.add(NUM_INPUTS);
@@ -85,7 +85,7 @@ public class Main {
 		unitsPerLayer.add(NUM_OUTPUTS);
 		NeuralNet nn = new NeuralNet(unitsPerLayer, NeuralNet.SIGMOID);
 		nn.train(trainingInputs, trainingDesiredOutputs, NUM_EPOCHS, LEARNING_RATE);
-
+		
 		// Evaluate the effectiveness of the network
 		int correctCount = 0;
 		for (int i = 0; i < testingInputs.size(); i++) {
