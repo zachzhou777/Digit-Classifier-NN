@@ -11,7 +11,7 @@ public class Unit {
 	private double weightedSum;
 	private double output;
 	private double error;	// Also known as the delta value for a unit
-	private static Random randGen = new Random();
+	private static final Random randGen = new Random();
 	
 	/**
 	 * Constructor for a unit.
@@ -40,7 +40,7 @@ public class Unit {
 	 * Add a weight to the unit. Weight's value is a random number from -0.005 to +0.005.
 	 */
 	public void addRandWeight() {
-		outgoingWeights.add((randGen.nextDouble() - 0.5) * 0.01);
+		outgoingWeights.add((randGen.nextDouble()/* - 0.5*/) * 0.01);
 	}
 	
 	/**

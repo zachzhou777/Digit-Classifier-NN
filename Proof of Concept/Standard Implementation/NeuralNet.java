@@ -16,8 +16,8 @@ public class NeuralNet {
 	 * Also adds a bias node to each layer excluding the output layer.
 	 * 
 	 * @param unitsPerLayer Indicates how many layers there are and how many units should be in 
-	 * @param activationFunction The number corresponding to the desired activation function
 	 * each layer
+	 * @param activationFunction The number corresponding to the desired activation function
 	 */
 	public NeuralNet(ArrayList<Integer> unitsPerLayer, int activationFunction) {
 		layers = new ArrayList<ArrayList<Unit>>();
@@ -44,12 +44,14 @@ public class NeuralNet {
 		layers.add(layer);
 		
 		// Create weights initialized to a random number from -0.005 to +0.005
-		for (int i = 0; i < layers.size() - 1; i++)
+		for (int i = 0; i < layers.size() - 1; i++) {
 			for (int j = 0; j < unitsPerLayer.get(i) + 1; j++) {
-				for (int k = 0; k < unitsPerLayer.get(i + 1); k++)
+				for (int k = 0; k < unitsPerLayer.get(i + 1); k++) {
 					layers.get(i).get(j).addRandWeight();
-				if (i == layers.size() - 2) layers.get(i).get(j).addRandWeight();
+				}
+				if (layers.size() - 2 == i) layers.get(i).get(j).addRandWeight();
 			}
+		}
 	}
 	
 	/**
@@ -98,17 +100,19 @@ public class NeuralNet {
 			ArrayList<Unit> prevLayer = layers.get(i - 1);
 			for (int j = 0; j < layers.get(i).size() - 1; j++) {	// Exclude the bias node
 				double weightedSum = 0;
-				for (int k = 0; k < prevLayer.size(); k++)
+				for (int k = 0; k < prevLayer.size(); k++) {
 					weightedSum += prevLayer.get(k).getOutput() * prevLayer.get(k).getWeight(j);
+				}
 				Unit u = layers.get(i).get(j);
 				u.setWeightedSum(weightedSum);
 				u.setOutput(activationFunction(weightedSum, activationFunction));
 			}
-			if (i == layers.size() - 1) {
+			if (layers.size() - 1 == i) {
 				double weightedSum = 0;
-				for (int k = 0; k < prevLayer.size(); k++)
+				for (int k = 0; k < prevLayer.size(); k++) {
 					weightedSum += prevLayer.get(k).getOutput() * 
 						prevLayer.get(k).getWeight(layers.get(i).size() - 1);
+				}
 				Unit u = layers.get(i).get(layers.get(i).size() - 1);
 				u.setWeightedSum(weightedSum);
 				u.setOutput(activationFunction(weightedSum, activationFunction));
@@ -127,16 +131,18 @@ public class NeuralNet {
 		ArrayList<Unit> outputLayer = layers.get(layers.size() - 1);
 		double highestValue = outputLayer.get(0).getOutput();
 		int index = 0;
-		for (int i = 1; i < outputLayer.size(); i++)
+		for (int i = 1; i < outputLayer.size(); i++) {
 			if (outputLayer.get(i).getOutput() > highestValue) {
 				highestValue = outputLayer.get(i).getOutput();
 				index = i;
 			}
+		}
 		
 		// For debugging
 //		System.out.println("Values at each output unit:");
-//		for (int i = 0; i < outputLayer.size(); i++) 
+//		for (int i = 0; i < outputLayer.size(); i++) {
 //			System.out.println(i + ") " + outputLayer.get(i).getOutput());
+//		}
 		
 		return index;	// Luckily enough, 'index' directly maps to the classification
 	}
@@ -151,7 +157,7 @@ public class NeuralNet {
 	 */
 	public void train(ArrayList<ArrayList<Double>> inputs, ArrayList<Integer> desiredOutputs, 
 			int numEpochs, double learningRate) {
-		for (int i = 0; i < numEpochs; i++)
+		for (int i = 0; i < numEpochs; i++) {
 			for (int j = 0; j < inputs.size(); j++) {
 				// Feed forward
 				propagateFwd(inputs.get(j));
@@ -175,25 +181,28 @@ public class NeuralNet {
 				for (int k = 0; k < layers.get(layers.size() - 2).size() - 1; k++) {
 					Unit u = layers.get(layers.size() - 2).get(k);
 					double error = 0;
-					for (int l = 0; l < outputLayer.size(); l++)
+					for (int l = 0; l < outputLayer.size(); l++) {
 						error += u.getWeight(l) * outputLayer.get(l).getError();
+					}
 					error *= activationDerivative(u.getWeightedSum(), activationFunction);
 					u.setError(error);
 				}
 				
-				// Step 2: Continue back-propagating errors all the way to the second
-				for (int k = layers.size() - 3; k > 0; k--)
+				// Step 2: Continue back-propagating errors all the way to the second layer
+				for (int k = layers.size() - 3; k > 0; k--) {
 					for (int l = 0; l < layers.get(k).size() - 1; l++) {
 						Unit u = layers.get(k).get(l);
 						double error = 0;
-						for (int m = 0; m < layers.get(k + 1).size() - 1; m++)
+						for (int m = 0; m < layers.get(k + 1).size() - 1; m++) {
 							error += u.getWeight(m) * layers.get(k + 1).get(m).getError();
+						}
 						error *= activationDerivative(u.getWeightedSum(), activationFunction);
 						u.setError(error);
 					}
+				}
 				
 				// Update weights using errors
-				for (int k = 0; k < layers.size() - 1; k++)
+				for (int k = 0; k < layers.size() - 2; k++) {
 					for (int l = 0; l < layers.get(k).size(); l++) {
 						Unit u = layers.get(k).get(l);
 						for (int m = 0; m < layers.get(k + 1).size() - 1; m++) {
@@ -202,6 +211,16 @@ public class NeuralNet {
 							u.setWeight(m, weight);
 						}
 					}
+				}
+				for (Unit u : layers.get(layers.size() - 2)) {
+					for (int k = 0; k < layers.get(layers.size() - 1).size(); k++) {
+						double weight = u.getWeight(k) + 
+								learningRate * u.getOutput() * 
+								layers.get(layers.size() - 1).get(k).getError();
+						u.setWeight(k, weight);
+					}
+				}
 			}
+		}
 	}
 }
