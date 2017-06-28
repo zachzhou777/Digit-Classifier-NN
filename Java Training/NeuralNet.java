@@ -240,14 +240,22 @@ public class NeuralNet {
 			printWriter.println("// Weights from layer " + (i - 1) + " to layer " + i);
 			for (int j = 0; j < layers.get(i).size() - 1; j++) {
 				printWriter.println("// Weights feeding into layer " + i + ", node " + j);
-				for (Unit u : layers.get(i - 1)) printWriter.println(u.getWeight(j));
+				for (int k = 0; k < layers.get(i - 1).size(); k++) {
+					printWriter.println("weights[" + (i - 1) + "][" + j + "][" + k + 
+							"] = " + layers.get(i - 1).get(k).getWeight(j) + ";");
+				}
+				printWriter.println();
 			}
 		}
 		printWriter.println("// Weights from layer " + (layers.size() - 2) + 
 				" to layer " + (layers.size() - 1));
 		for (int j = 0; j < layers.get(layers.size() - 1).size(); j++) {
 			printWriter.println("// Weights feeding into layer " + (layers.size() - 1) + ", node " + j);
-			for (Unit u : layers.get(layers.size() - 2)) printWriter.println(u.getWeight(j));
+			for (int k = 0; k < layers.get(layers.size() - 2).size(); k++) {
+				printWriter.println("weights[" + (layers.size() - 2) + "][" + j + "][" + k + 
+						"] = " + layers.get(layers.size() - 2).get(k).getWeight(j) + ";");
+			}
+			if (layers.get(layers.size() - 1).size() - 1 != j) printWriter.println();
 		}
 		printWriter.close();
 	}
