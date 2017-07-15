@@ -1,30 +1,20 @@
 # Neural Network for Digit Classification
-This is an implementation of a neural network on an embedded system controlled by the Tiva LaunchPad MCU. Purpose of the neural 
-net is to classify handwritten digits. The LaunchPad is connected to an LCD touchscreen, and I plan to have the system classify 
-digits traced on the screen. Training data is the Semeion handwritten digit data, which can be found online. Training will be done 
-in Java so that edge weights can be calculated. These weights will then be loaded onto the DE0-Nano FPGA board, which will be used 
-to perform future classifications.
+This is an implementation of a neural network for the Tiva LaunchPad MCU. Purpose of the neural net is to classify handwritten digits. 
+The MCU is connected to an LCD touchscreen, and the MCU classifies digits traced on the screen. Training data is the Semeion 
+handwritten digit data. Training is done in Java, and the resulting edge weights are programmed onto the MCU.
 
-Rather than performing conventional floating-point arithmetic, I'm using stochastic computing methods. The Survey of Stochastic 
+At one time, I thought about implementing classifications on an FPGA using stochastic computing methods. The Survey of Stochastic 
 Computing paper by Armin Alaghi and John P. Hayes from the University of Michigan will do a better job than I can of explaining 
 what stochastic computing is, but basically, real numbers in the range [0,1] can be represented by bitstreams where the proportion 
 of 1's represents the number. Multiplication can then be implemented using a single AND gate by passing two bitstreams through the 
-gate. For example, the square of 0.5 is 0.25 and can be modeled as the bitwise AND of the vectors \<0, 1, 0, 1> and \<0, 0, 1, 1> 
-to get \<0, 0, 0, 1>. Note that in this example, the product happens to be exactly correct; most of the time this will not 
-happen. If the two bitstreams for 0.5 were exactly the same, the product would be 0.5 as well. Therefore, large bitstreams 
-are needed to (on average) achieve a certain level of precision. In short, the advantage to using stochastic computing to perform 
-arithmetic is simplicity in hardware; you can implement multiplication with a single AND gate, whereas a multiplier requires 
-significantly greater resources. The major disadvantage would be time and precision; to multiply two numbers, you consume many 
-clock cycles trying to push two bitstreams through an AND gate, and the result may not even be that accurate. For most applications, 
-stochastic computing isn't necessary, but due to the massive amount of arithmetic needed in implementing a neural net, combined 
-with the fact that many of the calculations can be performed in parallel and do not have to be terribly accurate to yield useful 
-results, stochastic computing is preferred over conventional arithmetic.
+gate. As nice as that sounds, it turns out the MCU I'm using is fast enough at classifying digits where implementing stochastic 
+computing on an FPGA would only overcomplicate things. I've still included all the stochastic computing files in this repo, which 
+includes a couple Verilog files I was working on, and a Java proof of concept I made when testing the effectiveness of stochastic 
+computing.
 
-Proof of Concept - Java implementations of the neural network, one using standard floating-point arithmetic, the other using 
-stochastic computing methods. For the stochastic implementation, the StochasticComputing.java file is a standalone file that 
-is used to determine how long a bitstream needs to be to attain a given level of precision in representing the real number. 
-NeuralNet.java performs arithmetic the same way as the standard implementation, but performs the extra step of rounding 
-floating-point numbers so that only a given number of significant figures are present. Despite rounding errors, this neural net 
-performs just as well as the standard neural net.
+I didn't realize this at first, but the '1' digit, which I usually represent with a vertical line, was represented as a caret-like 
+symbol in the dataset. The '7' digit has a little dash through the middle, which is normal, but something to keep in mind when 
+tracing on the screen. The system hasn't correctly classified a '4' so far, which is odd. Aside from that, I've gotten the system to 
+correctly classify all the other digits.
 
-FPGA - Verilog/SystemVerilog code to be loaded on the FPGA
+I might try to throw in the FPGA at some point, but right now, I think I'll take a break from this project.
